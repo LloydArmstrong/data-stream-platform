@@ -1,0 +1,33 @@
+# Custom CRD Defines Flink Application and Session cluster deployments
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: basic-session-deployment-example
+spec:
+  image: flink:1.17
+  flinkVersion: v1_17
+  flinkConfiguration:
+# Autoscaler Config
+    taskmanager.numberOfTaskSlots: "5"
+    job.autoscaler.enabled: "true"
+    job.autoscaler.stabilization.interval: 1m
+    job.autoscaler.metrics.window: 1m
+    job.autoscaler.target.utilization: "0.6"
+    job.autoscaler.target.utilization.boundary: "0.2"
+    job.autoscaler.restart.time: 2m
+    job.autoscaler.catch-up.duration: 5m
+# # Automated Savepoint Config
+#     kubernetes.operator.periodic.savepoint.interval: 6h
+#     kubernetes.operator.savepoint.history.max.age: 24 h
+#     kubernetes.operator.savepoint.history.max.count: "5"
+#     state.checkpoints.dir: /tmp/flink/checkpoints
+#     state.savepoints.dir: /tmp/flink/savepoints
+  jobManager:
+    resource:
+      memory: "2048m"
+      cpu: 2
+  taskManager:
+    resource:
+      memory: "1024m"
+      cpu: 0.5
+  serviceAccount: flink
